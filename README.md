@@ -35,7 +35,7 @@ jobs:
     name: Validate PR title
     runs-on: ubuntu-latest
     steps:
-      - uses: amannn/action-semantic-pull-request@v4
+      - uses: amannn/action-semantic-pull-request@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -56,19 +56,20 @@ feat(ui): Add `Button` component.
 
 ```yml
         with:
-          # Configure which types are allowed.
+          # Configure which types are allowed (newline delimited).
           # Default: https://github.com/commitizen/conventional-commit-types
           types: |
             fix
             feat
-          # Configure which scopes are allowed.
+          # Configure which scopes are allowed (newline delimited).
           scopes: |
             core
             ui
           # Configure that a scope must always be provided.
           requireScope: true
-          # Configure which scopes are disallowed in PR titles. For instance by setting
-          # the value below, `chore(release): ...` and `ci(e2e,release): ...` will be rejected.
+          # Configure which scopes (newline delimited) are disallowed in PR
+          # titles. For instance by setting # the value below, `chore(release):
+          # ...` and `ci(e2e,release): ...` will be rejected.
           disallowScopes: |
             release
           # Configure additional validation for the subject based on a regex.
@@ -83,8 +84,8 @@ feat(ui): Add `Button` component.
             doesn't start with an uppercase character.
           # If you use GitHub Enterprise, you can set this to the URL of your server
           githubBaseUrl: https://github.myorg.com/api/v3
-          # If the PR contains one of these labels, the validation is skipped.
-          # Multiple labels can be separated by newlines.
+          # If the PR contains one of these labels (newline delimited), the
+          # validation is skipped.
           # If you want to rerun the validation when labels change, you might want
           # to use the `labeled` and `unlabeled` event triggers in your workflow.
           ignoreLabels: |
@@ -112,6 +113,62 @@ There are two events that can be used as triggers for this action, each with dif
 
 1. [`pull_request_target`](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request_target): This allows the action to be used in a fork-based workflow, where e.g. you want to accept pull requests in a public repository. In this case, the configuration from the main branch of your repository will be used for the check. This means that you need to have this configuration in the main branch for the action to run at all (e.g. it won't run within a PR that adds the action initially). Also if you change the configuration in a PR, the changes will not be reflected for the current PR – only subsequent ones after the changes are in the main branch.
 2. [`pull_request`](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request): This configuration uses the latest configuration that is available in the current branch. It will only work if the branch is based in the repository itself. If this configuration is used and a pull request from a fork is opened, you'll encounter an error as the GitHub token environment parameter is not available. This option is viable if all contributors have write access to the repository.
+
+## Outputs
+
+In case the validation fails, this action will populate the `error_message` ouput.
+
+[An output can be used in other steps](https://docs.github.com/en/actions/using-jobs/defining-outputs-for-jobs), for example to comment the error message onto the pull request.
+
+<details>
+<summary>Example</summary>
+
+```yml
+name: "Lint PR"
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+jobs:
+  main:
+    name: Validate PR title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        id: lint_pr_title
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: marocchino/sticky-pull-request-comment@v2
+        # When the previous steps fails, the workflow would stop. By adding this
+        # condition you can continue the execution with the populated error message.
+        if: always() && (steps.lint_pr_title.outputs.error_message != null)
+        with:
+          header: pr-title-lint-error
+          message: |
+            Hey there and thank you for opening this pull request! 👋🏼
+            
+            We require pull request titles to follow the [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/) and it looks like your proposed title needs to be adjusted.
+
+            Details:
+            
+            ```
+            ${{ steps.lint_pr_title.outputs.error_message }}
+            ```
+
+      # Delete a previous comment when the issue has been resolved
+      - if: ${{ steps.lint_pr_title.outputs.error_message == null }}
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:   
+          header: pr-title-lint-error
+          delete: true
+```
+
+</details>
 
 ## Legacy configuration
 

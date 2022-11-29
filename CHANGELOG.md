@@ -1,5 +1,37 @@
 # Changelog
 
+### [5.0.2](https://github.com/amannn/action-semantic-pull-request/compare/v5.0.1...v5.0.2) (2022-10-17)
+
+
+### Bug Fixes
+
+* Upgrade `@actions/core` to avoid deprecation warnings ([#208](https://github.com/amannn/action-semantic-pull-request/issues/208)) ([91f4126](https://github.com/amannn/action-semantic-pull-request/commit/91f4126c9e8625b9cadd64b02a03018fa22fc498))
+
+### [5.0.1](https://github.com/amannn/action-semantic-pull-request/compare/v5.0.0...v5.0.1) (2022-10-14)
+
+
+### Bug Fixes
+
+* Upgrade GitHub Action to use Node v16 ([#207](https://github.com/amannn/action-semantic-pull-request/issues/207)) ([6282ee3](https://github.com/amannn/action-semantic-pull-request/commit/6282ee339b067cb8eab05026f91153f873ad37fb))
+
+## [5.0.0](https://github.com/amannn/action-semantic-pull-request/compare/v4.6.0...v5.0.0) (2022-10-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* Enum options need to be newline delimited (to allow whitespace within them) (#205)
+
+### Features
+
+* Enum options need to be newline delimited (to allow whitespace within them) ([#205](https://github.com/amannn/action-semantic-pull-request/issues/205)) ([c906fe1](https://github.com/amannn/action-semantic-pull-request/commit/c906fe1e5a4bcc61624931ca94da9672107bd448))
+
+## [4.6.0](https://github.com/amannn/action-semantic-pull-request/compare/v4.5.0...v4.6.0) (2022-09-26)
+
+
+### Features
+
+* Provide error messages as `outputs.error_message` ([#194](https://github.com/amannn/action-semantic-pull-request/issues/194)) ([880a3c0](https://github.com/amannn/action-semantic-pull-request/commit/880a3c061c0dea01e977cefe26fb0e0d06b3d1a9))
+
 ## [4.5.0](https://github.com/amannn/action-semantic-pull-request/compare/v4.4.0...v4.5.0) (2022-05-04)
 
 
